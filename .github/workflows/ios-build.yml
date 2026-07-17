@@ -14,10 +14,18 @@ on:
   pull_request:
   workflow_dispatch:
 
+# All build steps run from the PhilonetTimer/ subdirectory
+# where project.yml and all source code live.
+env:
+  PROJECT_DIR: PhilonetTimer
+
 jobs:
   build:
     name: Build PhilonetTimer
     runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: PhilonetTimer
 
     steps:
       # ── 1. Checkout ────────────────────────────────────────
@@ -30,12 +38,14 @@ jobs:
 
       # ── 3. Install XcodeGen ────────────────────────────────
       - name: Install XcodeGen
+        working-directory: .
         run: brew install xcodegen
 
       # ── 4. Generate Xcode project ─────────────────────────
       - name: Generate Xcode project
         run: |
           echo "📂 Working directory: $(pwd)"
+          echo "📄 project.yml exists: $(test -f project.yml && echo YES || echo NO)"
           echo ""
           xcodegen generate --spec project.yml
           echo ""
