@@ -1,0 +1,85 @@
+# ──────────────────────────────────────────────────────────────
+# iOS Build — CI workflow for PhilonetTimer
+#
+# • Installs XcodeGen via Homebrew
+# • Generates PhilonetTimer.xcodeproj from project.yml
+# • Resolves Swift Package Manager dependencies (if any)
+# • Builds for an iOS Simulator destination with code-signing disabled
+# ──────────────────────────────────────────────────────────────
+
+name: iOS Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build PhilonetTimer
+    runs-on: macos-latest
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ── 2. Print Xcode version ─────────────────────────────
+      - name: Print Xcode version
+        run: xcodebuild -version
+
+      # ── 3. Install XcodeGen ────────────────────────────────
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      # ── 4. Generate Xcode project ─────────────────────────
+      - name: Generate Xcode project
+        working-directory: PhilonetTimer
+        run: |
+          xcodegen generate
+          echo ""
+          echo "✅ Generated project files:"
+          ls -la *.xcodeproj || true
+
+      # ── 5. List available schemes ──────────────────────────
+      - name: List available schemes
+        working-directory: PhilonetTimer
+        run: xcodebuild -project PhilonetTimer.xcodeproj -list
+
+      # ── 6. Resolve SPM dependencies (if any) ──────────────
+      - name: Resolve Swift Package Manager dependencies
+        working-directory: PhilonetTimer
+        run: |
+          if xcodebuild -project PhilonetTimer.xcodeproj -scheme PhilonetTimer -showBuildSettings 2>&1 | grep -q "SWIFT_PACKAGES"; then
+            echo "📦 Resolving Swift Package Manager dependencies..."
+            xcodebuild -project PhilonetTimer.xcodeproj \
+              -scheme PhilonetTimer \
+              -resolvePackageDependencies
+          else
+            echo "ℹ️  No SPM dependencies detected, skipping."
+          fi
+
+      # ── 7. Build for iOS Simulator ─────────────────────────
+      - name: Build for iOS Simulator
+        working-directory: PhilonetTimer
+        run: |
+          set -o pipefail
+
+          echo "🔨 Building PhilonetTimer..."
+          echo ""
+          echo "Project:     PhilonetTimer.xcodeproj"
+          echo "Scheme:      PhilonetTimer"
+          echo "Destination: iOS Simulator (iPhone 16)"
+          echo "Signing:     Disabled (CI build)"
+          echo ""
+
+          xcodebuild build \
+            -project PhilonetTimer.xcodeproj \
+            -scheme PhilonetTimer \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=latest" \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            | tee build.log
+
+          echo ""
+          echo "✅ Build succeeded!"
