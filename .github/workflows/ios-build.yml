@@ -87,6 +87,7 @@ jobs:
             -destination "generic/platform=iOS Simulator" \
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
+            SYMROOT=build \
             | tee build.log
 
           echo ""
@@ -131,6 +132,7 @@ jobs:
             -destination "platform=iOS Simulator,name=${SIMULATOR},OS=latest" \
             CODE_SIGNING_ALLOWED=NO \
             COMPILER_INDEX_STORE_ENABLE=NO \
+            SYMROOT=build \
             -resultBundlePath TestResults.xcresult \
             | tee test.log
 
@@ -148,3 +150,19 @@ jobs:
           else
             echo "No test.log file found — tests may not have run."
           fi
+
+      # ── 11. Zip and Upload Simulator App Bundle ────────────
+      - name: Zip Simulator App Bundle
+        if: success()
+        run: |
+          cd build/Debug-iphonesimulator
+          zip -r ../../PhilonetTimer.zip PhilonetTimer.app
+
+      - name: Publish Simulator Build Artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: PhilonetTimer-Simulator-Build
+          path: PhilonetTimer/PhilonetTimer.zip
+          if-no-files-found: error
+          retention-days: 5
