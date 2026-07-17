@@ -6,21 +6,15 @@ struct ArticleRowView: View {
     
     var body: some View {
         HStack(spacing: 14) {
-            // Leading icon with gradient background
+            // Leading icon with basic background
             ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(
-                        LinearGradient(
-                            colors: [Color.purple.opacity(0.7), Color.blue.opacity(0.6)],
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    .frame(width: 48, height: 48)
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color(.systemGray6))
+                    .frame(width: 40, height: 40)
                 
-                Image(systemName: "doc.richtext")
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundStyle(.white)
+                Image(systemName: "doc.text")
+                    .font(.system(size: 18))
+                    .foregroundStyle(.secondary)
             }
             
             // Article details
