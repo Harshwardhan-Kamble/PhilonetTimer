@@ -34,21 +34,20 @@ jobs:
 
       # ── 4. Generate Xcode project ─────────────────────────
       - name: Generate Xcode project
-        working-directory: PhilonetTimer
         run: |
-          xcodegen generate
+          echo "📂 Working directory: $(pwd)"
+          echo ""
+          xcodegen generate --spec project.yml
           echo ""
           echo "✅ Generated project files:"
           ls -la *.xcodeproj || true
 
       # ── 5. List available schemes ──────────────────────────
       - name: List available schemes
-        working-directory: PhilonetTimer
         run: xcodebuild -project PhilonetTimer.xcodeproj -list
 
       # ── 6. Resolve SPM dependencies (if any) ──────────────
       - name: Resolve Swift Package Manager dependencies
-        working-directory: PhilonetTimer
         run: |
           if xcodebuild -project PhilonetTimer.xcodeproj -scheme PhilonetTimer -showBuildSettings 2>&1 | grep -q "SWIFT_PACKAGES"; then
             echo "📦 Resolving Swift Package Manager dependencies..."
@@ -61,7 +60,6 @@ jobs:
 
       # ── 7. Build for iOS Simulator ─────────────────────────
       - name: Build for iOS Simulator
-        working-directory: PhilonetTimer
         run: |
           set -o pipefail
 
