@@ -91,3 +91,60 @@ jobs:
 
           echo ""
           echo "✅ Build succeeded!"
+
+      # ── 8. Find available simulator ────────────────────────
+      - name: Find available iOS Simulator
+        id: simulator
+        run: |
+          # List available simulators and pick the first booted or available iPhone
+          SIMULATOR_NAME=$(xcrun simctl list devices available -j \
+            | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          for runtime, devices in data['devices'].items():
+              if 'iOS' in runtime or 'SimRuntime.iOS' in runtime:
+                  for d in devices:
+                      if 'iPhone' in d['name'] and d['isAvailable']:
+                          print(d['name'])
+                          sys.exit(0)
+          print('Any iOS Simulator Device')
+          ")
+          echo "simulator_name=${SIMULATOR_NAME}" >> "$GITHUB_OUTPUT"
+          echo "📱 Using simulator: ${SIMULATOR_NAME}"
+
+      # ── 9. Run unit tests ──────────────────────────────────
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+
+          SIMULATOR="${{ steps.simulator.outputs.simulator_name }}"
+          echo "🧪 Running PhilonetTimerTests..."
+          echo ""
+          echo "Project:     PhilonetTimer.xcodeproj"
+          echo "Scheme:      PhilonetTimer"
+          echo "Destination: ${SIMULATOR}"
+          echo ""
+
+          xcodebuild test \
+            -project PhilonetTimer.xcodeproj \
+            -scheme PhilonetTimer \
+            -destination "platform=iOS Simulator,name=${SIMULATOR},OS=latest" \
+            CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO \
+            -resultBundlePath TestResults.xcresult \
+            | tee test.log
+
+          echo ""
+          echo "✅ All tests passed!"
+
+      # ── 10. Print test summary ─────────────────────────────
+      - name: Print test summary
+        if: always()
+        run: |
+          echo "📊 Test Results Summary"
+          echo "========================"
+          if [ -f test.log ]; then
+            grep -E "(Test Suite|Test Case|Executed|passed|failed|FAIL)" test.log || echo "No test output found"
+          else
+            echo "No test.log file found — tests may not have run."
+          fi

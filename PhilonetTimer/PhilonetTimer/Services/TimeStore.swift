@@ -40,6 +40,13 @@ class TimeStore: ObservableObject {
         loadMergeLog()
     }
     
+    /// Testable initializer that accepts a custom container directory.
+    init(containerOverride: URL) {
+        self.timesFileURL = containerOverride.appendingPathComponent(AppGroupConstants.timesFileName)
+        self.mergeLogFileURL = containerOverride.appendingPathComponent(AppGroupConstants.mergeLogFileName)
+        loadMergeLog()
+    }
+    
     // MARK: - Memory Layer
     
     /// Increments the in-memory time for an article. Called every timer tick.

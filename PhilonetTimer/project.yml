@@ -43,3 +43,19 @@ targets:
         MARKETING_VERSION: "1.0"
         CURRENT_PROJECT_VERSION: "1"
         CODE_SIGN_ENTITLEMENTS: PhilonetShare/PhilonetShare.entitlements
+
+  # ── Unit Tests ───────────────────────────────────────────
+  PhilonetTimerTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - PhilonetTimerTests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.philonet.timer.tests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/PhilonetTimer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PhilonetTimer"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+    dependencies:
+      - target: PhilonetTimer
+
