@@ -1,8 +1,6 @@
 import XCTest
 @testable import PhilonetTimer
 
-/// Tests for edge cases: zero sessions, negative durations, extreme values,
-/// concurrent multi-article tracking, and duplicate prevention.
 final class EdgeCaseTests: XCTestCase {
     
     var timeStore: TestableTimeStore!
@@ -18,8 +16,6 @@ final class EdgeCaseTests: XCTestCase {
         super.tearDown()
     }
     
-    // MARK: - Zero-Second Sessions
-    
     func testZeroSecondSession_doesNotCorruptState() {
         let id = UUID()
         timeStore.incrementMemory(for: id, by: 0.0)
@@ -30,11 +26,9 @@ final class EdgeCaseTests: XCTestCase {
         XCTAssertEqual(rule, .deduplication)
     }
     
-    // MARK: - Negative Durations
-    
     func testMerge_negativeMemory_diskWins() {
         let (resolved, _) = timeStore.merge(memoryTime: -5.0, diskTime: 10.0)
-        XCTAssertEqual(resolved, 10.0, "Negative memory should lose to positive disk")
+        XCTAssertEqual(resolved, 10.0)
     }
     
     func testIncrementMemory_negativeDoesNotCrash() {
@@ -44,8 +38,6 @@ final class EdgeCaseTests: XCTestCase {
         XCTAssertEqual(timeStore.currentMemoryTime(for: id), 7.0)
     }
     
-    // MARK: - Extremely Long Sessions
-    
     func testExtremelyLongSession() {
         let id = UUID()
         let twentyFourHours: TimeInterval = 86400.0
@@ -53,8 +45,6 @@ final class EdgeCaseTests: XCTestCase {
         timeStore.flush(articleID: id, articleTitle: "Marathon Reader")
         XCTAssertEqual(timeStore.readDiskTime(for: id), twentyFourHours)
     }
-    
-    // MARK: - Multiple Articles Simultaneously
     
     func testMultipleArticles_independentTracking() {
         let ids = (0..<10).map { _ in UUID() }
@@ -82,8 +72,6 @@ final class EdgeCaseTests: XCTestCase {
         XCTAssertEqual(timeStore.readDiskTime(for: id3), 300)
     }
     
-    // MARK: - Concurrent-Like Updates
-    
     func testRapidUpdates_doNotCorruptState() {
         let id = UUID()
         for i in 1...50 {
@@ -96,8 +84,6 @@ final class EdgeCaseTests: XCTestCase {
         timeStore.flush(articleID: id, articleTitle: "Rapid Test")
         XCTAssertEqual(timeStore.readDiskTime(for: id), 50.0)
     }
-    
-    // MARK: - Duplicate Prevention
     
     func testForceFlush_thenFlush_doesNotDoubleCount() {
         let id = UUID()

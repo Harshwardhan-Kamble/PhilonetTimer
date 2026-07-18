@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Home screen showing all saved articles with their accumulated reading time.
 struct ArticleListView: View {
     @EnvironmentObject var articleStore: ArticleStore
     @EnvironmentObject var timeStore: TimeStore

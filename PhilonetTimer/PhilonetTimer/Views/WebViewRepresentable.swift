@@ -1,7 +1,6 @@
 import SwiftUI
 import WebKit
 
-/// A UIViewRepresentable wrapper around WKWebView for displaying article content.
 struct WebViewRepresentable: UIViewRepresentable {
     let url: URL
     
@@ -22,7 +21,6 @@ struct WebViewRepresentable: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: WKWebView, context: Context) {
-        // Only reload if URL changed
         if uiView.url != url {
             let request = URLRequest(url: url)
             uiView.load(request)

@@ -1,19 +1,12 @@
 import Foundation
 
-/// Describes which merge rule was applied during a reconciliation event.
 enum MergeRule: String, Codable, CaseIterable {
-    /// Memory is ahead of disk — normal forward progress.
     case memoryWins
-    /// Disk is ahead of memory — e.g. after a crash recovery.
     case diskWins
-    /// Resolved to max(memory, disk) as a safety clamp.
     case clampToMax
-    /// Values were identical; no real merge needed.
     case deduplication
-    /// First-ever record, no prior data on either side.
     case freshStart
     
-    /// Human-readable label for the debug panel.
     var displayName: String {
         switch self {
         case .memoryWins:    return "Memory Wins"
@@ -24,7 +17,6 @@ enum MergeRule: String, Codable, CaseIterable {
         }
     }
     
-    /// Color name (SF Symbol compatible) for badge rendering.
     var colorName: String {
         switch self {
         case .memoryWins:    return "green"
@@ -36,7 +28,6 @@ enum MergeRule: String, Codable, CaseIterable {
     }
 }
 
-/// A single entry in the merge audit log, capturing exactly what happened during reconciliation.
 struct TimeMergeEntry: Identifiable, Codable {
     let id: UUID
     let articleID: UUID

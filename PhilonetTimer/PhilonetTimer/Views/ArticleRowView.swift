@@ -1,12 +1,10 @@
 import SwiftUI
 
-/// A single row in the article list, displaying title, domain, reading time, and date.
 struct ArticleRowView: View {
     let article: Article
     
     var body: some View {
         HStack(spacing: 14) {
-            // Leading icon with basic background
             ZStack {
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color(.systemGray6))
@@ -17,7 +15,6 @@ struct ArticleRowView: View {
                     .foregroundStyle(.secondary)
             }
             
-            // Article details
             VStack(alignment: .leading, spacing: 4) {
                 Text(article.title)
                     .font(.system(size: 16, weight: .semibold))
@@ -30,12 +27,10 @@ struct ArticleRowView: View {
                     .lineLimit(1)
                 
                 HStack(spacing: 12) {
-                    // Reading time badge
                     Label(TimeFormatter.format(article.readingTimeSeconds), systemImage: "timer")
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(article.readingTimeSeconds > 0 ? Color.blue : Color.secondary)
                     
-                    // Date added
                     Text(article.dateAdded, style: .relative)
                         .font(.system(size: 12))
                         .foregroundStyle(.tertiary)
@@ -44,7 +39,6 @@ struct ArticleRowView: View {
             
             Spacer()
             
-            // Chevron indicator
             Image(systemName: "chevron.right")
                 .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.quaternary)

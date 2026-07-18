@@ -1,7 +1,5 @@
 import SwiftUI
 
-/// The reader view displays an article in a WKWebView with a floating timer HUD.
-/// The timer starts on appear and pauses on disappear.
 struct ReaderView: View {
     let article: Article
     
@@ -57,8 +55,6 @@ struct ReaderView: View {
                 }
             }
     }
-    
-    // MARK: - Reading Lifecycle
     
     private func startReading() {
         let initialTime = timeStore.resolvedTime(for: article.id)

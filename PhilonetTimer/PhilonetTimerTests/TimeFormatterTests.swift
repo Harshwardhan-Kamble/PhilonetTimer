@@ -1,10 +1,7 @@
 import XCTest
 @testable import PhilonetTimer
 
-/// Tests for the TimeFormatter utility.
 final class TimeFormatterTests: XCTestCase {
-    
-    // MARK: - Compact Format
     
     func testFormat_zeroSeconds() {
         XCTAssertEqual(TimeFormatter.format(0), "0s")
@@ -26,8 +23,6 @@ final class TimeFormatterTests: XCTestCase {
         XCTAssertEqual(TimeFormatter.format(-10), "0s")
     }
     
-    // MARK: - Timer Display
-    
     func testTimerDisplay_zeroSeconds() {
         XCTAssertEqual(TimeFormatter.timerDisplay(0), "00:00")
     }
@@ -39,8 +34,6 @@ final class TimeFormatterTests: XCTestCase {
     func testTimerDisplay_hoursFormat() {
         XCTAssertEqual(TimeFormatter.timerDisplay(3661), "1:01:01")
     }
-    
-    // MARK: - Debug Format
     
     func testDebugFormat_nil() {
         XCTAssertEqual(TimeFormatter.debugFormat(nil), "nil")

@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// Debug panel showing memory vs disk values for each article and the full merge audit log.
 struct DebugPanelView: View {
     @EnvironmentObject var timeStore: TimeStore
     @EnvironmentObject var articleStore: ArticleStore
